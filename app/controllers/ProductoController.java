@@ -48,6 +48,7 @@ public class ProductoController extends Controller {
     public static void adicionarCategoriaAProducto(int idCategoria, ProductoEntity producto){
         CategoriaEntity categoria = CategoriaController.darCategoria(idCategoria);
         producto.setCategoria(categoria);
+        producto.setdNombreCategoria(categoria.getdNombre());
     }
 
     public static boolean eliminar(ProductoEntity producto){

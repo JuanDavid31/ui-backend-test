@@ -5,14 +5,15 @@
 
 create table categoria (
   c_id                          serial not null,
-  d_nombre                      varchar(255) not null UNIQUE,
+  d_nombre                      varchar(255) not null,
   constraint pk_categoria primary key (c_id)
 );
 
 create table producto (
   c_id                          serial not null,
-  d_nombre                      varchar(255) not null UNIQUE,
+  d_nombre                      varchar(255) not null,
   d_url_foto                    varchar(255),
+  d_nombre_categoria            varchar(255),
   f_limite                      varchar(255) not null,
   n_precio                      integer not null,
   a_ingredientes                varchar(255) not null,
@@ -23,7 +24,7 @@ create table producto (
 
 create table sucursal (
   c_id                          serial not null,
-  d_nombre                      varchar(255) not null UNIQUE,
+  d_nombre                      varchar(255) not null,
   a_direccion                   varchar(255) not null,
   constraint pk_sucursal primary key (c_id)
 );
@@ -37,15 +38,15 @@ create index ix_producto_c_id_categoria on producto (c_id_categoria);
 
 # --- !Downs
 
-alter table producto drop constraint if exists fk_producto_c_id_sucursal;
+alter table if exists producto drop constraint if exists fk_producto_c_id_sucursal;
 drop index if exists ix_producto_c_id_sucursal;
 
-alter table producto drop constraint if exists fk_producto_c_id_categoria;
+alter table if exists producto drop constraint if exists fk_producto_c_id_categoria;
 drop index if exists ix_producto_c_id_categoria;
 
-drop table if exists categoria;
+drop table if exists categoria cascade;
 
-drop table if exists producto;
+drop table if exists producto cascade;
 
-drop table if exists sucursal;
+drop table if exists sucursal cascade;
 

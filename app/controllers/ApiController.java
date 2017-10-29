@@ -8,6 +8,7 @@ import models.SucursalEntity;
 import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Http.*;
+import views.html.indice;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.List;
 public class ApiController extends Controller {
 
     public Result indice(){
-        return ok("Holi");
+        return ok(indice.render());
     }
 
     public Result darSucursales(){
@@ -123,7 +124,7 @@ public class ApiController extends Controller {
         return internalServerError("No se pudo eliminar la categoria, intentelo de nuevo.");
     }
 
-    public Result darProductosPorSucursal(int id){
+    public Result darProductosPorSucursal(int id){ //Debo enviar el nombre de la categoria
         SucursalEntity sucursal = null;
         List<ProductoEntity> productos = null;
         try {

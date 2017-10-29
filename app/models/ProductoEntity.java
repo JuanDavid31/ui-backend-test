@@ -20,6 +20,7 @@ public class ProductoEntity extends Model implements Validatable<String> {
     @Size(min = 3)
     private String dNombre;
     private String dUrlFoto;
+    private String dNombreCategoria;
     @NonEmpty
     @NotNull @Size(min = 3)
     private String fLimite;
@@ -59,6 +60,15 @@ public class ProductoEntity extends Model implements Validatable<String> {
 
     public void setdUrlFoto(String dUrlFoto) {
         this.dUrlFoto = dUrlFoto;
+    }
+
+    @Column(name = "dNombreCategoria")
+    public String getdNombreCategoria() {
+        return dNombreCategoria;
+    }
+
+    public void setdNombreCategoria(String dNombreCategoria) {
+        this.dNombreCategoria = dNombreCategoria;
     }
 
     @Column(name = "f_limite")
@@ -112,6 +122,7 @@ public class ProductoEntity extends Model implements Validatable<String> {
                 "cId=" + cId +
                 ", dNombre='" + dNombre + '\'' +
                 ", dUrlFoto='" + dUrlFoto + '\'' +
+                ", dNombreCategoria='" + dNombreCategoria + '\'' +
                 ", fLimite='" + fLimite + '\'' +
                 ", nPrecio=" + nPrecio +
                 ", aIngredientes='" + aIngredientes + '\'' +
