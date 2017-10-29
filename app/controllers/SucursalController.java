@@ -1,5 +1,6 @@
 package controllers;
 
+import Exceptions.ObjetoNoExisteException;
 import models.*;
 import play.mvc.*;
 
@@ -11,8 +12,13 @@ public class SucursalController extends Controller {
         return SucursalEntity.find.all();
     }
 
-    public static SucursalEntity darSucursal(int id){
-        return SucursalEntity.find.ref(id);
+    public static SucursalEntity darSucursal(int id) throws ObjetoNoExisteException {
+        SucursalEntity sucursal = SucursalEntity.find.ref(id);
+        if(sucursal.validate() == null){
+            return sucursal;
+        }else{
+            throw new ObjetoNoExisteException("No existe la sucursal");
+        }
     }
 
     public static boolean guardar(SucursalEntity sucursal){
@@ -31,7 +37,7 @@ public class SucursalController extends Controller {
 
     public static boolean eliminar(SucursalEntity sucursal){
         List<ProductoEntity> productos = sucursal.getProductos();
-        for(ProductoEntity producto : productos ){
+        for(ProductoEntity producto : productos){
             ProductoController.eliminar(producto);
         }
         return sucursal.delete();

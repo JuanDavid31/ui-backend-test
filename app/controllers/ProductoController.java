@@ -1,7 +1,9 @@
 package controllers;
 
+import Exceptions.ObjetoNoExisteException;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.CategoriaEntity;
 import models.ProductoEntity;
 import models.SucursalEntity;
@@ -21,8 +23,13 @@ public class ProductoController extends Controller {
         return ProductoEntity.find.all();
     }
 
-    public static ProductoEntity darProducto(int id){
-        return ProductoEntity.find.ref(id);
+    public static ProductoEntity darProducto(int id) throws ObjetoNoExisteException {
+        ProductoEntity producto = ProductoEntity.find.ref(id);
+        if(producto.validate() == null){
+            return producto;
+        }else{
+            throw new ObjetoNoExisteException("El producto no existe");
+        }
     }
 
     public static boolean guardar(ProductoEntity producto){
@@ -33,7 +40,7 @@ public class ProductoController extends Controller {
         return false;
     }
 
-    public static void adicionarSucursalAProducto(int idSucursal, ProductoEntity producto){
+    public static void adicionarSucursalAProducto(int idSucursal, ProductoEntity producto) throws ObjetoNoExisteException {
         SucursalEntity sucursal = SucursalController.darSucursal(idSucursal);
         producto.setSucursal(sucursal);
     }
@@ -49,7 +56,30 @@ public class ProductoController extends Controller {
         return producto.delete();
     }
 
-    public static Result subirFoto(MultipartFormData<File> body, int idProducto) throws IOException {
+    public static Result editarProductoConUrl(int id, JsonNode json){
+        ProductoEntity producto = null;
+        Result resultado = null;
+        try {
+            producto = ProductoController.darProducto(id);
+            String url = json.findPath("url").textValue();
+            producto.setdUrlFoto(url);
+            resultado = productoConUrlValido(producto);
+        } catch (ObjetoNoExisteException e) {
+            e.printStackTrace();
+            return badRequest("El producto no existe");
+        }
+        return resultado;
+    }
+
+    private static Result productoConUrlValido(ProductoEntity producto){
+        if(producto.getdUrlFoto() != null && (producto.getdUrlFoto().endsWith(".jpg") || producto.getdUrlFoto().endsWith(".jpeg") || producto.getdUrlFoto().endsWith(".gif") || producto.getdUrlFoto().endsWith(".png") || producto.getdUrlFoto().endsWith(".svg") || producto.getdUrlFoto().endsWith(".bmp"))){
+            return badRequest("Formato incorrecto");
+        }
+        ProductoController.guardar(producto);
+        return ok("Producto editado");
+    }
+
+    public static Result subirFoto(MultipartFormData<File> body, int idProducto) throws IOException, ObjetoNoExisteException {
         File archivo = subir(body);
         if(archivo != null){
             Map resultados = alojarEnCloudDinary(archivo);
@@ -83,7 +113,7 @@ public class ProductoController extends Controller {
         return cd.uploader().upload(cancion, ObjectUtils.asMap("resource_type", "auto"));
     }
 
-    private static void guardar(Map datos){
+    private static void guardar(Map datos) throws ObjetoNoExisteException {
         ProductoEntity producto = ProductoController.darProducto(Integer.parseInt(datos.get("id").toString()));
         producto.setdUrlFoto(datos.get("url").toString());
         ProductoController.guardar(producto);
