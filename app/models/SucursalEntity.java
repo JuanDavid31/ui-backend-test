@@ -10,6 +10,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.*;
 
+/**
+ * Clase que modelas las sucursales
+ */
 @Entity
 @Table(name = "sucursal")
 public class SucursalEntity extends Model implements Validatable<String> {

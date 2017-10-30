@@ -10,6 +10,9 @@ import io.ebean.annotation.NotNull;
 import play.data.format.Formats.*;
 import play.data.validation.Constraints.*;
 
+/**
+ * Clase que modela las categorias
+ */
 @Entity
 @Table(name = "categoria")
 public class CategoriaEntity  extends Model implements Validatable<String>{

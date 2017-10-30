@@ -9,6 +9,9 @@ import play.data.validation.Constraints.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
+/**
+ * Clase que modela los productos
+ */
 @Entity
 @Table(name = "producto")
 public class ProductoEntity extends Model implements Validatable<String> {
