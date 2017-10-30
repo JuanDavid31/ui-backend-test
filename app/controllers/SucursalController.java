@@ -37,8 +37,8 @@ public class SucursalController extends Controller {
 
     public static boolean eliminar(SucursalEntity sucursal){
         List<ProductoEntity> productos = sucursal.getProductos();
-        for(ProductoEntity producto : productos){
-            ProductoController.eliminar(producto);
+        for(int i = 0; i < productos.size(); i++){
+            ProductoController.eliminar(productos.get(i));
         }
         return sucursal.delete();
     }
