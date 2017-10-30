@@ -4,6 +4,7 @@ import Exceptions.ObjetoNoExisteException;
 import models.*;
 import play.mvc.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class SucursalController extends Controller {
@@ -37,8 +38,11 @@ public class SucursalController extends Controller {
 
     public static boolean eliminar(SucursalEntity sucursal){
         List<ProductoEntity> productos = sucursal.getProductos();
-        for(int i = 0; i < productos.size(); i++){
-            ProductoController.eliminar(productos.get(i));
+        Iterator<ProductoEntity> iterador = productos.iterator();
+        while(iterador.hasNext()){
+            ProductoEntity producto = iterador.next();
+            ProductoController.eliminar(producto);
+            iterador.remove();
         }
         return sucursal.delete();
     }

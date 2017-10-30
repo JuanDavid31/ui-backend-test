@@ -53,7 +53,6 @@ public class ProductoController extends Controller {
 
     public static boolean eliminar(ProductoEntity producto){
         producto.getCategoria().getProductos().remove(producto);
-        producto.getSucursal().getProductos().remove(producto);
         return producto.delete();
     }
 
