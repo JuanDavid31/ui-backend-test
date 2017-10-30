@@ -74,10 +74,10 @@ public class ProductoController extends Controller {
 
     private static Result productoConUrlValido(ProductoEntity producto){
         if(producto.getdUrlFoto() != null && (producto.getdUrlFoto().endsWith(".jpg") || producto.getdUrlFoto().endsWith(".jpeg") || producto.getdUrlFoto().endsWith(".gif") || producto.getdUrlFoto().endsWith(".png") || producto.getdUrlFoto().endsWith(".svg") || producto.getdUrlFoto().endsWith(".bmp"))){
-            return badRequest("Formato incorrecto");
+            ProductoController.guardar(producto);
+            return ok("Producto editado");
         }
-        ProductoController.guardar(producto);
-        return ok("Producto editado");
+        return badRequest("Formato incorrecto");
     }
 
     public static Result subirFoto(MultipartFormData<File> body, int idProducto) throws IOException, ObjetoNoExisteException {

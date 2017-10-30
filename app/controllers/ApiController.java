@@ -189,6 +189,7 @@ public class ApiController extends Controller {
         ProductoEntity producto = null;
         try {
             producto = ProductoController.darProducto(id);
+            ProductoController.eliminar(producto);
         } catch (ObjetoNoExisteException e) {
             return internalServerError("El producto no existe");
         }
