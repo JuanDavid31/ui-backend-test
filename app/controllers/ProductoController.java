@@ -1,6 +1,6 @@
 package controllers;
 
-import Exceptions.ObjetoNoExisteException;
+import Exceptions.EntidadNoExisteException;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,14 +34,14 @@ public class ProductoController extends Controller {
      * Devuelve un producto
      * @param id del producto
      * @return  El producto existente
-     * @throws ObjetoNoExisteException Si el producto no existe
+     * @throws EntidadNoExisteException Si el producto no existe
      */
-    public static ProductoEntity darProducto(int id) throws ObjetoNoExisteException {
+    public static ProductoEntity darProducto(int id) throws EntidadNoExisteException {
         ProductoEntity producto = ProductoEntity.find.ref(id);
         if(producto.validate() == null){
             return producto;
         }else{
-            throw new ObjetoNoExisteException("El producto no existe");
+            throw new EntidadNoExisteException("El producto no existe");
         }
     }
 
@@ -62,9 +62,9 @@ public class ProductoController extends Controller {
      * Relaciona una sucursal dado un producto
      * @param idSucursal el id de la sucursal a relacionar
      * @param producto producto al que se le relacionara la sucursal
-     * @throws ObjetoNoExisteException si la sucursal no existe
+     * @throws EntidadNoExisteException si la sucursal no existe
      */
-    public static void adicionarSucursalAProducto(int idSucursal, ProductoEntity producto) throws ObjetoNoExisteException {
+    public static void adicionarSucursalAProducto(int idSucursal, ProductoEntity producto) throws EntidadNoExisteException {
         SucursalEntity sucursal = SucursalController.darSucursal(idSucursal);
         producto.setSucursal(sucursal);
     }
@@ -104,7 +104,7 @@ public class ProductoController extends Controller {
             String url = json.findPath("url").textValue();
             producto.setdUrlFoto(url);
             resultado = productoConUrlValido(producto);
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("El producto no existe");
         }
@@ -130,9 +130,9 @@ public class ProductoController extends Controller {
      * @param idProducto id del producto
      * @return Result con el estado de la operación
      * @throws IOException Si hay un error en la lectura del archivo
-     * @throws ObjetoNoExisteException Si el producto no existe
+     * @throws EntidadNoExisteException Si el producto no existe
      */
-    public static Result subirFoto(MultipartFormData<File> body, int idProducto) throws IOException, ObjetoNoExisteException {
+    public static Result subirFoto(MultipartFormData<File> body, int idProducto) throws IOException, EntidadNoExisteException {
         File archivo = subir(body);
         if(archivo != null){
             Map resultados = alojarEnCloudDinary(archivo);
@@ -185,9 +185,9 @@ public class ProductoController extends Controller {
     /**
      * Guarda el producto con los resultados de la subida
      * @param datos de la subida
-     * @throws ObjetoNoExisteException si el producto no existe
+     * @throws EntidadNoExisteException si el producto no existe
      */
-    private static void guardar(Map datos) throws ObjetoNoExisteException {
+    private static void guardar(Map datos) throws EntidadNoExisteException {
         ProductoEntity producto = ProductoController.darProducto(Integer.parseInt(datos.get("id").toString()));
         producto.setdUrlFoto(datos.get("url").toString());
         ProductoController.guardar(producto);

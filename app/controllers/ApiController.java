@@ -1,6 +1,6 @@
 package controllers;
 
-import Exceptions.ObjetoNoExisteException;
+import Exceptions.EntidadNoExisteException;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.CategoriaEntity;
 import models.ProductoEntity;
@@ -45,7 +45,7 @@ public class ApiController extends Controller {
         SucursalEntity sucursal = null;
         try {
             sucursal = SucursalController.darSucursal(id);
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("Sucursal no existe");
         }
@@ -97,7 +97,7 @@ public class ApiController extends Controller {
                 SucursalController.guardar(sucursal);
                 return ok("Sucursal editado");
             }
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("La sucursal no existe");
         }
@@ -114,7 +114,7 @@ public class ApiController extends Controller {
         try {
             sucursal = SucursalController.darSucursal(id);
             SucursalController.eliminar(sucursal);
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("La sucursal no existe");
         }
@@ -190,7 +190,7 @@ public class ApiController extends Controller {
         try {
             sucursal = SucursalController.darSucursal(id);
             productos = sucursal.getProductos();
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("La sucursal no existe");
         }
@@ -212,7 +212,7 @@ public class ApiController extends Controller {
                 ProductoController.adicionarSucursalAProducto(idSucursal, producto);
                 ProductoController.adicionarCategoriaAProducto(idCategoria, producto);
                 ProductoController.guardar(producto);
-            } catch (ObjetoNoExisteException e) {
+            } catch (EntidadNoExisteException e) {
                 e.printStackTrace();
                 return badRequest("La sucursal no existe");
             }
@@ -261,7 +261,7 @@ public class ApiController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
             return badRequest("La cancion no se pudo subir por un error en el servidor");
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             e.printStackTrace();
             return badRequest("El producto no existe");
         }
@@ -277,7 +277,7 @@ public class ApiController extends Controller {
         try {
             producto = ProductoController.darProducto(id);
             ProductoController.eliminar(producto);
-        } catch (ObjetoNoExisteException e) {
+        } catch (EntidadNoExisteException e) {
             return internalServerError("El producto no existe");
         }
         return ok("Se elimino el producto");

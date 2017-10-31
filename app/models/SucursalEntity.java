@@ -38,7 +38,7 @@ public class SucursalEntity extends Model implements Validatable<String> {
         this.cId = cId;
     }
 
-    @Column(name = "dNombre")
+    @Column(name = "dNombre", unique = true)
     public String getdNombre() {
         return dNombre;
     }

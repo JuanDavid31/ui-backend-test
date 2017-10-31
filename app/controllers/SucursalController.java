@@ -1,6 +1,6 @@
 package controllers;
 
-import Exceptions.ObjetoNoExisteException;
+import Exceptions.EntidadNoExisteException;
 import models.*;
 import play.mvc.*;
 
@@ -24,14 +24,14 @@ public class SucursalController extends Controller {
      * Da una sucursal dado un id
      * @param id de la sucursal
      * @return  Sucursal con el id dado
-     * @throws ObjetoNoExisteException Si la sucursal con el id no existe
+     * @throws EntidadNoExisteException Si la sucursal con el id no existe
      */
-    public static SucursalEntity darSucursal(int id) throws ObjetoNoExisteException {
+    public static SucursalEntity darSucursal(int id) throws EntidadNoExisteException {
         SucursalEntity sucursal = SucursalEntity.find.ref(id);
         if(sucursal.validate() == null){
             return sucursal;
         }else{
-            throw new ObjetoNoExisteException("No existe la sucursal");
+            throw new EntidadNoExisteException("No existe la sucursal");
         }
     }
 

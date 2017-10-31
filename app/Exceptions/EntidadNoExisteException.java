@@ -3,9 +3,9 @@ package Exceptions;
 /**
  * Exception especifica para un nullPointerException en entidades
  */
-public class ObjetoNoExisteException extends Exception{
+public class EntidadNoExisteException extends Exception{
 
-    public ObjetoNoExisteException(String mensaje){
+    public EntidadNoExisteException(String mensaje){
         super(mensaje);
     }
 }
