@@ -2,16 +2,13 @@ package controllers;
 
 import Exceptions.EntidadNoExisteException;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.CategoriaEntity;
-import models.ProductoEntity;
-import models.SucursalEntity;
+import models.*;
 import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Http.*;
 import views.html.indice;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 /**

@@ -4,18 +4,13 @@ import Exceptions.EntidadNoExisteException;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.CategoriaEntity;
-import models.ProductoEntity;
-import models.SucursalEntity;
+import models.*;
 import play.mvc.*;
 import play.mvc.Http.*;
 import play.mvc.Http.MultipartFormData.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * Clase que ealiza todas las acciones relacionadas con los productos

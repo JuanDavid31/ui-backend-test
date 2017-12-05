@@ -4,8 +4,7 @@ import Exceptions.EntidadNoExisteException;
 import models.*;
 import play.mvc.*;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Clase que controla las acciones relaciones con las sucursales

@@ -1,7 +1,6 @@
 package controllers;
 
-import models.ProductoEntity;
-import models.CategoriaEntity;
+import models.*;
 import play.mvc.*;
 
 import java.util.List;
