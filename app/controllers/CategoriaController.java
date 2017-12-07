@@ -1,8 +1,11 @@
 package controllers;
 
+import Exceptions.EntidadNoExisteException;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import play.mvc.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,8 +26,13 @@ public class CategoriaController extends Controller {
      * @param id de la categoria a devolver
      * @return categoria
      */
-    public static CategoriaEntity darCategoria(int id){
-        return CategoriaEntity.find.ref(id);
+    public static CategoriaEntity darCategoria(int id) throws EntidadNoExisteException{
+        CategoriaEntity categoria = CategoriaEntity.find.ref(id);
+        if(categoria.validate() == null){
+            return categoria;
+        }else{
+            throw new EntidadNoExisteException("No existe la categoria");
+        }
     }
 
     /**
@@ -56,20 +64,18 @@ public class CategoriaController extends Controller {
      * @return True, si todo salio bien, false en caso contrario
      */
     public static boolean eliminar(CategoriaEntity categoria){
-        List<ProductoEntity> productos = categoria.getProductos();
-        for(ProductoEntity producto : productos ){
-            ProductoController.eliminar(producto);
-        }
         return categoria.delete();
     }
 
     /**
-     * Adicionar un producto a una categoria
-     * @param categoria a la que se adicionara el producto
-     * @param producto Que se va a adicioanr
+     * Mapea JSON a una entidad
+     * @param json que va a ser mapeado
+     * @param categoria en la que se va a mapear el JSON
+     * @return categoria mapeada
      */
-    public static void adicionarProducto(CategoriaEntity categoria, ProductoEntity producto){
-        categoria.getProductos().add(producto);
-        guardar(categoria);
+    public static CategoriaEntity jsonAEntidadCategoria(JsonNode json, CategoriaEntity categoria){
+        String nombre = json.findPath("nombre").textValue();
+        categoria.setdNombre(nombre);
+        return categoria;
     }
 }

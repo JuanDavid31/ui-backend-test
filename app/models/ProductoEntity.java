@@ -147,4 +147,21 @@ public class ProductoEntity extends Model implements Validatable<String> {
         }
         return null;
     }
+
+    public boolean urlValida(){
+        if(getdUrlFoto() != null && validarFormatos(this)){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validarFormatos(ProductoEntity producto){
+        if (producto.getdUrlFoto().endsWith(".jpg")) return true;
+        if (producto.getdUrlFoto().endsWith(".jpeg")) return true;
+        if (producto.getdUrlFoto().endsWith(".gif")) return true;
+        if (producto.getdUrlFoto().endsWith(".png")) return true;
+        if (producto.getdUrlFoto().endsWith(".svg")) return true;
+        if (producto.getdUrlFoto().endsWith(".bmp")) return true;
+        return false;
+    }
 }

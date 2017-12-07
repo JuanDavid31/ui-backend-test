@@ -69,7 +69,7 @@ public class ProductoController extends Controller {
      * @param idCategoria id de la categoria a relacionar
      * @param producto producto al que se le relacionara la categoria
      */
-    public static void adicionarCategoriaAProducto(int idCategoria, ProductoEntity producto){
+    public static void adicionarCategoriaAProducto(int idCategoria, ProductoEntity producto) throws EntidadNoExisteException {
         CategoriaEntity categoria = CategoriaController.darCategoria(idCategoria);
         producto.setCategoria(categoria);
         producto.setdNombreCategoria(categoria.getdNombre());
@@ -81,7 +81,6 @@ public class ProductoController extends Controller {
      * @return True si todo salio bien, false en caso contrario
      */
     public static boolean eliminar(ProductoEntity producto){
-        producto.getCategoria().getProductos().remove(producto);
         return producto.delete();
     }
 
@@ -112,7 +111,7 @@ public class ProductoController extends Controller {
      * @return Result con el estado de la operación
      */
     private static Result productoConUrlValido(ProductoEntity producto){
-        if(producto.getdUrlFoto() != null && (producto.getdUrlFoto().endsWith(".jpg") || producto.getdUrlFoto().endsWith(".jpeg") || producto.getdUrlFoto().endsWith(".gif") || producto.getdUrlFoto().endsWith(".png") || producto.getdUrlFoto().endsWith(".svg") || producto.getdUrlFoto().endsWith(".bmp"))){
+        if(producto.urlValida()){
             ProductoController.guardar(producto);
             return ok("Producto editado");
         }
@@ -186,5 +185,36 @@ public class ProductoController extends Controller {
         ProductoEntity producto = ProductoController.darProducto(Integer.parseInt(datos.get("id").toString()));
         producto.setdUrlFoto(datos.get("url").toString());
         ProductoController.guardar(producto);
+    }
+
+    /**
+     * Registra el producto en la sucursal y categoria dada
+     * @param idSucursal id de la sucursal
+     * @param idCategoria id de la categoria
+     * @param producto que se va a registrar
+     * @throws EntidadNoExisteException Si alguna de las entidades no existe
+     */
+    public static void registrarProducto(int idSucursal, int idCategoria, ProductoEntity producto) throws EntidadNoExisteException {
+        adicionarSucursalAProducto(idSucursal, producto);
+        adicionarCategoriaAProducto(idCategoria, producto);
+        guardar(producto);
+    }
+
+    /**
+     * Mapea una entidad con json dado
+     * @param json con los datos a mapear
+     * @param producto en el que se mapearan los datos
+     * @return ProductoEntity mapeado
+     */
+    public static ProductoEntity jsonAEntidadProducto(JsonNode json, ProductoEntity producto){
+        String nombre = json.findPath("nombre").textValue();
+        String fecha = json.findPath("fecha").textValue();
+        int precio = json.findPath("precio").asInt();
+        String ingredientes = json.findPath("ingredientes").textValue();
+        producto.setdNombre(nombre);
+        producto.setfLimite(fecha);
+        producto.setnPrecio(precio);
+        producto.setaIngredientes(ingredientes);
+        return producto;
     }
 }

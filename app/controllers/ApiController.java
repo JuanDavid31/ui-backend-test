@@ -1,6 +1,7 @@
 package controllers;
 
 import Exceptions.EntidadNoExisteException;
+import com.cloudinary.api.exceptions.BadRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import play.libs.Json;
@@ -38,7 +39,7 @@ public class ApiController extends Controller {
      * @param id de la sucursal
      * @return Result con la sucursal en json
      */
-    public Result darSucursal(int id){
+    public Result darSucursal(int id){ //TODO: La sucursal tiene 0 productos pero se muestran como JSON, NO ENTIENDO :s
         SucursalEntity sucursal = null;
         try {
             sucursal = SucursalController.darSucursal(id);
@@ -55,27 +56,13 @@ public class ApiController extends Controller {
      */
     public Result adicionarSucursal(){
         JsonNode json = request().body().asJson();
-        SucursalEntity sucursal = jsonAEntidadSucursal(json, new SucursalEntity());
+        SucursalEntity sucursal = SucursalController.jsonAEntidadSucursal(json, new SucursalEntity());
         String mensaje = sucursal.validate();
         if(mensaje == null) {
             SucursalController.guardar(sucursal);
             return ok("Sucursal adicionado");
         }
         return badRequest(mensaje);
-    }
-
-    /**
-     * Mapea json a una entidad
-     * @param json que contiene los datos
-     * @param sucursal en la que se va a mapear
-     * @return SucursalEntity mapeada
-     */
-    private SucursalEntity jsonAEntidadSucursal(JsonNode json, SucursalEntity sucursal){
-        String nombre = json.findPath("nombre").textValue();
-        String direccion = json.findPath("direccion").textValue();
-        sucursal.setdNombre(nombre);
-        sucursal.setaDireccion(direccion);
-        return sucursal;
     }
 
     /**
@@ -88,7 +75,7 @@ public class ApiController extends Controller {
         SucursalEntity sucursal = null;
         String mensaje = null;
         try {
-            sucursal = jsonAEntidadSucursal(json, SucursalController.darSucursal(id));
+            sucursal = SucursalController.jsonAEntidadSucursal(json, SucursalController.darSucursal(id));
             mensaje = sucursal.validate();
             if(mensaje == null) {
                 SucursalController.guardar(sucursal);
@@ -133,9 +120,7 @@ public class ApiController extends Controller {
      */
     public Result adicionarCategoria(){
         JsonNode json = request().body().asJson();
-        String nombre = json.findPath("nombre").textValue();
-        CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre(nombre);
+        CategoriaEntity categoria = CategoriaController.jsonAEntidadCategoria(json, new CategoriaEntity());
         String mensaje = categoria.validate();
         if(mensaje == null) {
             CategoriaController.guardar(categoria);
@@ -151,15 +136,18 @@ public class ApiController extends Controller {
      */
     public Result actualizarCategoria(int id){
         JsonNode json = request().body().asJson();
-        String nombre = json.findPath("nombre").textValue();
-        CategoriaEntity categoria = CategoriaController.darCategoria(id);
-        categoria.setdNombre(nombre);
-        String mensaje = categoria.validate();
-        if(mensaje == null) {
-            CategoriaController.guardar(categoria); 
-            return ok("Categoria guardada");
+        try {
+            CategoriaEntity categoria = CategoriaController.jsonAEntidadCategoria(json, CategoriaController.darCategoria(id));
+            String mensaje = categoria.validate();
+            if(mensaje == null) {
+                CategoriaController.guardar(categoria);
+                return ok("Categoria guardada");
+            }
+            return badRequest(mensaje);
+        } catch (EntidadNoExisteException e) {
+            e.printStackTrace();
+            return badRequest("La categoria no existe");
         }
-        return badRequest(mensaje);
     }
 
     /**
@@ -168,9 +156,13 @@ public class ApiController extends Controller {
      * @return Result con el estado de la operación
      */
     public Result eliminarCategoria(int id){
-        CategoriaEntity categoria = CategoriaController.darCategoria(id);
-        if(categoria.delete()){
-            return ok("Categoria eliminada");
+        CategoriaEntity categoria = null;
+        try {
+            categoria = CategoriaController.darCategoria(id);
+            if(categoria.delete()) return ok("Categoria eliminada");
+        } catch (EntidadNoExisteException e) {
+            e.printStackTrace();
+            return badRequest("La categoria no existe");
         }
         return internalServerError("No se pudo eliminar la categoria, intentelo de nuevo.");
     }
@@ -202,38 +194,18 @@ public class ApiController extends Controller {
      */
     public Result adicionarProducto(int idSucursal, int idCategoria){
         JsonNode json = request().body().asJson();
-        ProductoEntity producto = jsonAEntidadProducto(json, new ProductoEntity());
+        ProductoEntity producto = ProductoController.jsonAEntidadProducto(json, new ProductoEntity());
         String mensaje = producto.validate();
         if(mensaje == null){
             try {
-                ProductoController.adicionarSucursalAProducto(idSucursal, producto);
-                ProductoController.adicionarCategoriaAProducto(idCategoria, producto);
-                ProductoController.guardar(producto);
+                ProductoController.registrarProducto(idSucursal, idCategoria, producto);
             } catch (EntidadNoExisteException e) {
                 e.printStackTrace();
-                return badRequest("La sucursal no existe");
+                return badRequest("Alguna entidad no existe");
             }
             return ok("Producto adicionado correctamente");
         }
         return badRequest(mensaje);
-    }
-
-    /**
-     * Mapea una entidad con json dado
-     * @param json con los datos a mapear
-     * @param producto en el que se mapearan los datos
-     * @return ProductoEntity mapeado
-     */
-    private ProductoEntity jsonAEntidadProducto(JsonNode json, ProductoEntity producto){
-        String nombre = json.findPath("nombre").textValue();
-        String fecha = json.findPath("fecha").textValue();
-        int precio = json.findPath("precio").asInt();
-        String ingredientes = json.findPath("ingredientes").textValue();
-        producto.setdNombre(nombre);
-        producto.setfLimite(fecha);
-        producto.setnPrecio(precio);
-        producto.setaIngredientes(ingredientes);
-        return producto;
     }
 
     /**

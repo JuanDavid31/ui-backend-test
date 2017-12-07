@@ -3,91 +3,87 @@ import akka.http.impl.util.JavaMapping;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import controllers.CategoriaController;
 import controllers.ProductoController;
+import controllers.SucursalController;
 import models.CategoriaEntity;
 import models.ProductoEntity;
 import models.SucursalEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import play.Application;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolutions;
+import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
+import play.test.WithApplication;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.assertEquals;
 
-public class ProductoControllerTest {
+public class ProductoControllerTest extends WithApplication{
 
-    Database database;
-
-    @Before
-    public void createDatabase() {
-        database = Databases.createFrom(
-                "org.postgresql.Driver",
-                "jdbc:postgresql://localhost:5432/playdb",
-                ImmutableMap.of(
-                        "db.default.username", "juan",
-                        "password", "12345"
-                )
-        );
-        Evolutions.applyEvolutions(database);
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
     }
-
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
 
     @Test
     public void testCRUD(){
 
         try {
+            int numeroAleatorio = ThreadLocalRandom.current().nextInt(100, 900);
+            
             SucursalEntity sucursal = new SucursalEntity();
-            sucursal.setcId(800);
+            sucursal.setcId(numeroAleatorio);
             sucursal.setaDireccion("dir");
             sucursal.setdNombre("nombre");
-            sucursal.save();
+            SucursalController.guardar(sucursal);
 
             CategoriaEntity categoria = new CategoriaEntity();
-            categoria.setcId(800);
+            categoria.setcId(numeroAleatorio);
             categoria.setdNombre("nombre");
-            categoria.save();
+            CategoriaController.guardar(categoria);
 
 
             ProductoEntity producto = new ProductoEntity();
-            producto.setcId(800);
+            producto.setcId(numeroAleatorio);
             producto.setdNombre("nombre");
-            producto.setnPrecio(100);
+            producto.setnPrecio(200);
             producto.setaIngredientes("ingrediente");
             producto.setdNombreCategoria("categoria");
-            producto.setdUrlFoto("url");
+            producto.setdUrlFoto("url.jpg");
             producto.setfLimite("fecha");
 
-            ProductoController.adicionarSucursalAProducto(800,producto);
-            ProductoController.adicionarCategoriaAProducto(800,producto);
+            ProductoController.adicionarSucursalAProducto(numeroAleatorio,producto);
+            ProductoController.adicionarCategoriaAProducto(numeroAleatorio,producto);
 
             ProductoController.guardar(producto);
 
-            assertEquals("No guardo",producto, ProductoController.darProducto(800));
+            assertEquals("No guardo",producto, ProductoController.darProducto(numeroAleatorio));
 
-            JsonNode json = Json.parse("{\\\"url\\\":\\\"url1}");
+            ObjectNode json = Json.newObject();
+            json.put("url", "urlTEST.jpg");
 
-            ProductoController.editarProductoConUrl(producto.getcId(),json);
+            ProductoController.editarProductoConUrl(numeroAleatorio,json);
 
-            assertEquals("url1",producto.getdUrlFoto());
+            assertEquals("No edito la url", "urlTEST.jpg",ProductoController.darProducto(numeroAleatorio).getdUrlFoto());
 
             assertEquals("No elimino", true, ProductoController.eliminar(producto));
+
+            ProductoController.eliminar(producto);
+            SucursalController.eliminar(sucursal);
         } catch (EntidadNoExisteException e) {
             System.out.println("No debería pasar por aquí");
         }

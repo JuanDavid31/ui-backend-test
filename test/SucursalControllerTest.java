@@ -1,63 +1,49 @@
 import Exceptions.EntidadNoExisteException;
-import com.google.common.collect.ImmutableMap;
 import controllers.SucursalController;
 import models.SucursalEntity;
 import org.junit.*;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolutions;
+import play.Application;
+import play.inject.guice.GuiceApplicationBuilder;
+import play.test.WithApplication;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.*;
 
-public class SucursalControllerTest {
+public class SucursalControllerTest extends WithApplication {
 
-    Database database;
-
-    @Before
-    public void createDatabase() {
-        database = Databases.createFrom(
-                "org.postgresql.Driver",
-                "jdbc:postgresql://localhost:5432/playdb",
-                ImmutableMap.of(
-                        "db.default.username", "juan",
-                        "password", "12345"
-                )
-        );
-        Evolutions.applyEvolutions(database);
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
     }
-
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
 
     @Test
-    public void testCRUD(){
+    public void testCRUD(){ //TODO: número aleatorio
+
+        int numeroAleatorio = ThreadLocalRandom.current().nextInt(100, 900);
+        int numeroAleatorio2 = ThreadLocalRandom.current().nextInt(100, 900);
 
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setcId(800);
+        sucursal.setcId(numeroAleatorio);
         sucursal.setaDireccion("dir");
         sucursal.setdNombre("nombre");
-        sucursal.save();
+        SucursalController.guardar(sucursal);
 
         SucursalEntity sucursal1 = new SucursalEntity();
-        sucursal1.setcId(900);
+        sucursal1.setcId(numeroAleatorio2);
         sucursal1.setaDireccion("dir1");
         sucursal1.setdNombre("nombre1");
 
         try {
-            assertEquals("No guardo",sucursal, SucursalController.darSucursal(800));
+            assertEquals("No guardo",sucursal, SucursalController.darSucursal(numeroAleatorio));
         } catch (EntidadNoExisteException e) {
             System.out.println("No debería pasar por aquí");
         }
 
         SucursalController.editar(sucursal, sucursal1);
-        assertEquals("No edito nombre",sucursal.getdNombre(),sucursal1.getdNombre());
-        assertEquals("No edito direccion",sucursal.getaDireccion(),sucursal1.getaDireccion());
-
-        assertEquals("No borro",sucursal.delete(), false);
+        assertEquals("No edito nombre", sucursal.getdNombre(),sucursal1.getdNombre());
+        assertEquals("No edito direccion", sucursal.getaDireccion(),sucursal1.getaDireccion());
+        assertEquals("No borro", SucursalController.eliminar( sucursal), true);
 
     }
 }

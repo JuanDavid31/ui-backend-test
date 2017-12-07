@@ -29,6 +29,10 @@ public class SucursalEntity extends Model implements Validatable<String> {
     private List<ProductoEntity> productos;
     public static final Finder<Integer, SucursalEntity> find = new Finder<>(SucursalEntity.class);
 
+    public SucursalEntity(){
+        productos = new ArrayList();
+    }
+
     @Column(name = "c_id")
     public int getcId() {
         return cId;
@@ -56,7 +60,7 @@ public class SucursalEntity extends Model implements Validatable<String> {
         this.aDireccion = aDireccion;
     }
 
-    @OneToMany(mappedBy = "sucursal")
+    @OneToMany(mappedBy = "sucursal", orphanRemoval = true)
     public List<ProductoEntity> getProductos() {
         return productos;
     }

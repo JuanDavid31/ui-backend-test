@@ -1,6 +1,8 @@
 package controllers;
 
 import Exceptions.EntidadNoExisteException;
+import com.fasterxml.jackson.databind.JsonNode;
+import io.ebean.Ebean;
 import models.*;
 import play.mvc.*;
 
@@ -64,23 +66,21 @@ public class SucursalController extends Controller {
      * @return true si todo salio bien, false en caso contrario.
      */
     public static boolean eliminar(SucursalEntity sucursal){
-        List<ProductoEntity> productos = sucursal.getProductos();
-        Iterator<ProductoEntity> iterador = productos.iterator();
-        while(iterador.hasNext()){
-            ProductoEntity producto = iterador.next();
-            ProductoController.eliminar(producto);
-            iterador.remove();
-        }
         return sucursal.delete();
     }
 
+
     /**
-     * Adiciona un producto a una sucursal
-     * @param sucursal a la que se le agregara el producto
-     * @param producto producto que se va a agregar a la sucursal
+     * Mapea json a una entidad
+     * @param json que contiene los datos
+     * @param sucursal en la que se va a mapear
+     * @return SucursalEntity mapeada
      */
-    public static void adicionarProducto(SucursalEntity sucursal, ProductoEntity producto){
-        sucursal.getProductos().add(producto);
-        guardar(sucursal);
+    public static SucursalEntity jsonAEntidadSucursal(JsonNode json, SucursalEntity sucursal){
+        String nombre = json.findPath("nombre").textValue();
+        String direccion = json.findPath("direccion").textValue();
+        sucursal.setdNombre(nombre);
+        sucursal.setaDireccion(direccion);
+        return sucursal;
     }
 }

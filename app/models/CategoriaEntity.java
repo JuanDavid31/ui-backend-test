@@ -1,9 +1,11 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import controllers.CategoriaController;
 import io.ebean.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.ebean.annotation.NotNull;
@@ -25,6 +27,10 @@ public class CategoriaEntity  extends Model implements Validatable<String>{
     private List<ProductoEntity> productos;
     public static final Finder<Integer, CategoriaEntity> find = new Finder<>(CategoriaEntity.class);
 
+    public CategoriaEntity(){
+        productos = new ArrayList();
+    }
+
     @Column(name = "c_id")
     public int getcId() {
         return cId;
@@ -43,7 +49,7 @@ public class CategoriaEntity  extends Model implements Validatable<String>{
         this.dNombre = dNombre;
     }
 
-    @OneToMany(mappedBy = "categoria")
+    @OneToMany(mappedBy = "categoria", orphanRemoval = true)
     public List<ProductoEntity> getProductos() {
         return productos;
     }

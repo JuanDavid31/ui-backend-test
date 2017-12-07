@@ -1,54 +1,51 @@
+import Exceptions.EntidadNoExisteException;
 import com.google.common.collect.ImmutableMap;
 import controllers.CategoriaController;
 import models.*;
 import org.junit.*;
+import play.Application;
 import play.db.*;
 import play.db.evolutions.Evolutions;
+import play.inject.guice.GuiceApplicationBuilder;
+import play.test.WithApplication;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 
-public class CategoriaControllerTest {
+public class CategoriaControllerTest extends WithApplication{
 
-    Database database;
-
-    @Before
-    public void createDatabase() {
-        database = Databases.createFrom(
-                "org.postgresql.Driver",
-                "jdbc:postgresql://localhost:5432/playdb",
-                ImmutableMap.of(
-                        "db.default.username", "juan",
-                        "password", "12345"
-                )
-        );
-        Evolutions.applyEvolutions(database);
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
     }
-
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
 
     @Test
     public void testCRUD(){
 
+        int numeroAleatorio = ThreadLocalRandom.current().nextInt(100, 900);
+        int numeroAleatorio2 = ThreadLocalRandom.current().nextInt(100, 900);
+
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setcId(800);
+        categoria.setcId(numeroAleatorio);
         categoria.setdNombre("nombre");
-        categoria.save();
+        CategoriaController.guardar(categoria);
 
         CategoriaEntity categoria1 = new CategoriaEntity();
-        categoria1.setcId(900);
+        categoria1.setcId(numeroAleatorio2);
         categoria1.setdNombre("nombre1");
 
-        assertEquals("No guardo",categoria, CategoriaController.darCategoria(800));
+        try {
+            assertEquals("No guardo",categoria, CategoriaController.darCategoria(numeroAleatorio));
+        } catch (EntidadNoExisteException e) {
+            e.printStackTrace();
+            System.out.println("No debería pasar por aquí");
+        }
 
         CategoriaController.editar(categoria, categoria1);
         assertEquals("No edito nombre",categoria.getdNombre(),categoria1.getdNombre());
 
-        assertEquals("No borro",categoria.delete(), false);
+        assertEquals("No borro", CategoriaController.eliminar(categoria), true);
 
     }
 }
