@@ -17,16 +17,35 @@ import java.util.*;
 @Table(name = "sucursal")
 public class SucursalEntity extends Model implements Validatable<String> {
 
+    /**
+     * id de la sucursal
+     */
     @Id
-    private int cId;
+    private int id;
+
+    /**
+     * nombre de la sucursal
+     */
     @NonEmpty
     @NotNull
     @Size(min = 3)
-    private String dNombre;
+    private String nombre;
+
+    /**
+     * Dirección de la sucursal
+     */
     @NonEmpty @NotNull @Size(min = 3)
-    private String aDireccion;
+    private String direccion;
+
+    /**
+     * productos que contiene la sucursal
+     */
     @JsonManagedReference
     private List<ProductoEntity> productos;
+
+    /**
+     * Atributo utilizado para consultas relacionadas con la entidad
+     */
     public static final Finder<Integer, SucursalEntity> find = new Finder<>(SucursalEntity.class);
 
     public SucursalEntity(){
@@ -34,30 +53,30 @@ public class SucursalEntity extends Model implements Validatable<String> {
     }
 
     @Column(name = "c_id")
-    public int getcId() {
-        return cId;
+    public int getId() {
+        return id;
     }
 
-    public void setcId(int cId) {
-        this.cId = cId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    @Column(name = "dNombre", unique = true)
-    public String getdNombre() {
-        return dNombre;
+    @Column(name = "d_nombre", unique = true)
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setdNombre(String dNombre) {
-        this.dNombre = dNombre;
+    public void setNombre(String dNombre) {
+        this.nombre = dNombre;
     }
 
     @Column(name = "a_direccion")
-    public String getaDireccion() {
-        return aDireccion;
+    public String getDireccion() {
+        return direccion;
     }
 
-    public void setaDireccion(String aDireccion) {
-        this.aDireccion = aDireccion;
+    public void setDireccion(String aDireccion) {
+        this.direccion = aDireccion;
     }
 
     @OneToMany(mappedBy = "sucursal", orphanRemoval = true)
@@ -68,18 +87,22 @@ public class SucursalEntity extends Model implements Validatable<String> {
     @Override
     public String toString() {
         return "SucursalEntity{" +
-                "cId=" + cId +
-                ", dNombre='" + dNombre + '\'' +
-                ", aDireccion='" + aDireccion + '\'' +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", direccion='" + direccion + '\'' +
                 ", productos=" + productos +
                 '}';
     }
 
+    /**
+     * Valida que cada atributo con etiqueta @NotNull este en un estado optimo antes de ser persistido
+     * @return Un mensaje con algun error, null si todo esta bien
+     */
     @Override
     public String validate() {
-        if(dNombre == null || dNombre.trim().equalsIgnoreCase("")){
+        if(nombre == null || nombre.trim().equalsIgnoreCase("")){
             return "Nombre no puede ser vacio";
-        }else if(aDireccion == null || aDireccion.trim().equalsIgnoreCase("")){
+        }else if(direccion == null || direccion.trim().equalsIgnoreCase("")){
             return "Direccion no puede ser vacio";
         }
         return null;

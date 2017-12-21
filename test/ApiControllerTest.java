@@ -15,11 +15,18 @@ import static play.test.Helpers.*;
 
 public class ApiControllerTest extends WithApplication {
 
+    /**
+     * Crea una applicación ficitica con la configuración existente
+     * @return
+     */
     @Override
     protected Application provideApplication() {
         return new GuiceApplicationBuilder().build();
     }
 
+    /**
+     * Prueba el indice de la api
+     */
     @Test
     public void testIndice(){
         Http.RequestBuilder peticion = new Http.RequestBuilder()
@@ -30,6 +37,9 @@ public class ApiControllerTest extends WithApplication {
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo darSucursales
+     */
     @Test
     public void testDarSucursales(){
         Http.RequestBuilder peticion = new Http.RequestBuilder()
@@ -40,23 +50,29 @@ public class ApiControllerTest extends WithApplication {
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo darSucursal
+     */
     @Test
     public void testDarSucursal(){
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(GET)
-                .uri("/sucursales.json/"+sucursal.getcId());
+                .uri("/sucursales.json/"+sucursal.getid());
 
         Result resultado = route(app, peticion);
         SucursalController.eliminar(sucursal);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo adicionarSucursal
+     */
     @Test
     public void testAdicionarSucursal(){
 
@@ -67,7 +83,7 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(POST)
                 .bodyJson(json)
-                .uri("/adicionarSucursal");
+                .uri("/sucursales.json");
 
 
         Result resultado = route(app, peticion);
@@ -75,11 +91,14 @@ public class ApiControllerTest extends WithApplication {
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo actualizarSucursal
+     */
     @Test
     public void actualizarSucursalTest(){
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
@@ -90,29 +109,35 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(PUT)
                 .bodyJson(json)
-                .uri("/actualizarSucursal/" + sucursal.getcId());
+                .uri("/sucursales.json/" + sucursal.getid());
 
         Result resultado = route(app, peticion);
         SucursalController.eliminar(sucursal);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo eliminarSucursal
+     */
     @Test
     public void eliminarSucursalTest(){
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(DELETE)
-                .uri("/eliminarSucursal/" + sucursal.getcId());
+                .uri("/sucursales.json/" + sucursal.getid());
 
         Result resultado = route(app, peticion);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo darCategorias
+     */
     @Test
     public void darCategoriasTest(){
         Http.RequestBuilder peticion = new Http.RequestBuilder()
@@ -123,6 +148,9 @@ public class ApiControllerTest extends WithApplication {
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo adicionarCategorias
+     */
     @Test
     public void adicionarCategoriaTest(){
         ObjectNode json = Json.newObject();
@@ -131,17 +159,20 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(POST)
                 .bodyJson(json)
-                .uri("/adicionarCategoria");
+                .uri("/categorias.json");
 
         Result resultado = route(app, peticion);
         CategoriaController.eliminar(CategoriaController.darTodas().get(CategoriaController.darTodas().size() - 1));
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo acualiazar categoria
+     */
     @Test
     public void actualizarCategoriaTest(){
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre("Test");
+        categoria.setNombre("Test");
 
         CategoriaController.guardar(categoria);
 
@@ -151,55 +182,64 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(PUT)
                 .bodyJson(json)
-                .uri("/actualizarCategoria/" + categoria.getcId());
+                .uri("/categorias.json/" + categoria.getId());
 
         Result resultado = route(app, peticion);
         CategoriaController.eliminar(categoria);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo eliminarCategoria
+     */
     @Test
     public void eliminarCategoriaTest(){
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre("Test");
+        categoria.setNombre("Test");
 
         CategoriaController.guardar(categoria);
 
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(DELETE)
-                .uri("/eliminarCategoria/" + categoria.getcId());
+                .uri("/categorias.json/" + categoria.getId());
 
         Result resultado = route(app, peticion);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo darProductoPorSucursal
+     */
     @Test
     public void darProductosPorSucursalTest(){
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(GET)
-                .uri("/productos.json/"+sucursal.getcId());
+                .uri("/productos.json/"+sucursal.getid());
 
         Result resultado = route(app, peticion);
         SucursalController.eliminar(sucursal);
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo adicionarProducto
+     */
     @Test
     public void adicionarProductoTest(){
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("SucursalTest");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("SucursalTest");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre("Categoriatest");
+        categoria.setNombre("Categoriatest");
 
         CategoriaController.guardar(categoria);
 
@@ -212,7 +252,7 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(POST)
                 .bodyJson(json)
-                .uri("/adicionarProducto/"+sucursal.getcId() + "/" + categoria.getcId());
+                .uri("/productos.json/"+sucursal.getid() + "/" + categoria.getId());
 
         Result resultado = route(app, peticion);
         SucursalController.eliminar(sucursal);
@@ -220,27 +260,30 @@ public class ApiControllerTest extends WithApplication {
         assertEquals(OK, resultado.status());
     }
 
+    /**
+     * Prueba la ruta para el metodo editarProductoConUrl
+     */
     @Test
     public void editarProductoConUrlTest() throws EntidadNoExisteException {
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre("test");
+        categoria.setNombre("test");
 
         CategoriaController.guardar(categoria);
 
         ProductoEntity producto = new ProductoEntity();
-        producto.setdNombre("test");
-        producto.setaIngredientes("test");
-        producto.setfLimite("test");
-        producto.setnPrecio(12345);
+        producto.setNombre("test");
+        producto.setIngredientes("test");
+        producto.setFechaLimite("test");
+        producto.setPrecio(12345);
 
-        ProductoController.adicionarSucursalAProducto(sucursal.getcId(), producto);
-        ProductoController.adicionarCategoriaAProducto(categoria.getcId(), producto);
+        ProductoController.adicionarSucursalAProducto(sucursal.getid(), producto);
+        ProductoController.adicionarCategoriaAProducto(categoria.getId(), producto);
         ProductoController.guardar(producto);
 
         ObjectNode json = Json.newObject();
@@ -249,7 +292,7 @@ public class ApiControllerTest extends WithApplication {
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(PUT)
                 .bodyJson(json)
-                .uri("/editarProductoConUrl/" + producto.getcId());
+                .uri("/productos.json/" + producto.getId());
 
         Result resultado = route(app, peticion);
         ProductoController.eliminar(producto);
@@ -263,32 +306,34 @@ public class ApiControllerTest extends WithApplication {
 
     }*/
 
-
+    /**
+     * Prueba la ruta para el metodo eliminarProducto
+     */
     public void eliminarProductoTest() throws EntidadNoExisteException {
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setdNombre("Test");
-        sucursal.setaDireccion("Desde los test");
+        sucursal.setNombre("Test");
+        sucursal.setDireccion("Desde los test");
 
         SucursalController.guardar(sucursal);
 
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setdNombre("test");
+        categoria.setNombre("test");
 
         CategoriaController.guardar(categoria);
 
         ProductoEntity producto = new ProductoEntity();
-        producto.setdNombre("test");
-        producto.setaIngredientes("test");
-        producto.setfLimite("test");
-        producto.setnPrecio(12345);
+        producto.setNombre("test");
+        producto.setIngredientes("test");
+        producto.setFechaLimite("test");
+        producto.setPrecio(12345);
 
-        ProductoController.adicionarSucursalAProducto(sucursal.getcId(), producto);
-        ProductoController.adicionarCategoriaAProducto(categoria.getcId(), producto);
+        ProductoController.adicionarSucursalAProducto(sucursal.getid(), producto);
+        ProductoController.adicionarCategoriaAProducto(categoria.getId(), producto);
         ProductoController.guardar(producto);
 
         Http.RequestBuilder peticion = new Http.RequestBuilder()
                 .method(DELETE)
-                .uri("/eliminarProducto/" + producto.getcId());
+                .uri("/productos.json/" + producto.getId());
 
         Result resultado = route(app, peticion);
         SucursalController.eliminar(sucursal);

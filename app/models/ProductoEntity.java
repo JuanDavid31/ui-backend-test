@@ -16,89 +16,128 @@ import javax.validation.constraints.Size;
 @Table(name = "producto")
 public class ProductoEntity extends Model implements Validatable<String> {
 
+    /**
+     * id del producto
+     */
     @Id
-    private int cId;
+    private int id;
+
+    /**
+     * Nombre del producto
+     */
     @NonEmpty
     @NotNull
     @Size(min = 3)
-    private String dNombre;
-    private String dUrlFoto;
-    private String dNombreCategoria;
+    private String nombre;
+
+    /**
+     * Url donde se encuentra alojada la foto
+     */
+    private String urlFoto;
+
+    /**
+     * Nombre de la categoria a la que pertenece el producto
+     */
+    private String nombreCategoria;
+
+    /**
+     * Fecha limite de disponibilidad del producto
+     */
     @NonEmpty
     @NotNull @Size(min = 3)
-    private String fLimite;
+    private String fechaLimite;
+
+    /**
+     * Precio del producto
+     */
     @NotNull
-    private int nPrecio;
+    private int precio;
+
+    /**
+     * Ingredientes del producto separados por comas (,)
+     */
     @NonEmpty
     @NotNull @Size(min = 3)
-    private String aIngredientes;
+    private String ingredientes;
+
+    /**
+     * Sucursal a la que pertenece el producto
+     */
     @JsonBackReference
     private SucursalEntity sucursal;
+
+    /**
+     * Categoria a la que pertenece el producto
+     */
     @JsonBackReference
     private CategoriaEntity categoria;
+
+    /**
+     * Atributo utilizado para consultas relacionadas con la entidad
+     */
     public static final Finder<Integer, ProductoEntity> find = new Finder<>(ProductoEntity.class);
 
     @Column(name = "c_id")
-    public int getcId() {
-        return cId;
+    public int getId() {
+        return id;
     }
 
-    public void setcId(int cId) {
-        this.cId = cId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Column(name = "d_nombre", unique = true)
-    public String getdNombre() {
-        return dNombre;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setdNombre(String dNombre) {
-        this.dNombre = dNombre;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     @Column(name = "d_url_foto")
-    public String getdUrlFoto() {
-        return dUrlFoto;
+    public String getUrlFoto() {
+        return urlFoto;
     }
 
-    public void setdUrlFoto(String dUrlFoto) {
-        this.dUrlFoto = dUrlFoto;
+    public void setUrlFoto(String urlFoto) {
+        this.urlFoto = urlFoto;
     }
 
-    @Column(name = "dNombreCategoria")
-    public String getdNombreCategoria() {
-        return dNombreCategoria;
+    @Column(name = "d_nombre_categoria")
+    public String getNombreCategoria() {
+        return nombreCategoria;
     }
 
-    public void setdNombreCategoria(String dNombreCategoria) {
-        this.dNombreCategoria = dNombreCategoria;
+    public void setNombreCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
     }
 
     @Column(name = "f_limite")
-    public String getfLimite() {
-        return fLimite;
+    public String getFechaLimite() {
+        return fechaLimite;
     }
 
-    public void setfLimite(String fLimite) {
-        this.fLimite = fLimite;
+    public void setFechaLimite(String fechaLimite) {
+        this.fechaLimite = fechaLimite;
     }
 
     @Column(name = "n_precio")
-    public double getnPrecio() {
-        return nPrecio;
+    public double getPrecio() {
+        return precio;
     }
 
-    public void setnPrecio(int precio) {
-        this.nPrecio = precio;
+    public void setPrecio(int precio) {
+        this.precio = precio;
     }
 
     @Column(name = "a_ingredientes")
-    public String getaIngredientes() {
-        return aIngredientes;
+    public String getIngredientes() {
+        return ingredientes;
     }
 
-    public void setaIngredientes(String ingredientes) {
-        this.aIngredientes = ingredientes;
+    public void setIngredientes(String ingredientes) {
+        this.ingredientes = ingredientes;
     }
 
     @ManyToOne(optional = false) @JoinColumn(name = "c_id_sucursal")
@@ -122,46 +161,50 @@ public class ProductoEntity extends Model implements Validatable<String> {
     @Override
     public String toString() {
         return "ProductoEntity{" +
-                "cId=" + cId +
-                ", dNombre='" + dNombre + '\'' +
-                ", dUrlFoto='" + dUrlFoto + '\'' +
-                ", dNombreCategoria='" + dNombreCategoria + '\'' +
-                ", fLimite='" + fLimite + '\'' +
-                ", nPrecio=" + nPrecio +
-                ", aIngredientes='" + aIngredientes + '\'' +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", urlFoto='" + urlFoto + '\'' +
+                ", nombreCategoria='" + nombreCategoria + '\'' +
+                ", fechaLimite='" + fechaLimite + '\'' +
+                ", precio=" + precio +
+                ", ingredientes='" + ingredientes + '\'' +
                 ", sucursal=" + sucursal +
                 ", categoria=" + categoria +
                 '}';
     }
 
+    /**
+     * Valida que cada atributo con etiqueta @NotNull este en un estado optimo antes de ser persistido
+     * @return Un mensaje con algun error, null si todo esta bien
+     */
     @Override
     public String validate() {
-        if(dNombre == null || dNombre.trim().equalsIgnoreCase("")){
+        if(nombre == null || nombre.trim().equalsIgnoreCase("")){
             return "Nombre no puede estar vacio";
-        }else if(fLimite == null || fLimite.trim().equalsIgnoreCase("")){
+        }else if(fechaLimite == null || fechaLimite.trim().equalsIgnoreCase("")){
             return "Fecha no puede estar vacia";
-        }else if(nPrecio == 0 || nPrecio < 0){
+        }else if(precio == 0 || precio < 0){
             return "Precio incorrecto";
-        }else if(aIngredientes == null || aIngredientes.trim().equalsIgnoreCase("")){
+        }else if(ingredientes == null || ingredientes.trim().equalsIgnoreCase("")){
             return "Debe haber al menos 1 ingrediente";
         }
         return null;
     }
 
     public boolean urlValida(){
-        if(getdUrlFoto() != null && validarFormatos(this)){
+        if(getUrlFoto() != null && validarFormatos(this)){
             return true;
         }
         return false;
     }
 
     private boolean validarFormatos(ProductoEntity producto){
-        if (producto.getdUrlFoto().endsWith(".jpg")) return true;
-        if (producto.getdUrlFoto().endsWith(".jpeg")) return true;
-        if (producto.getdUrlFoto().endsWith(".gif")) return true;
-        if (producto.getdUrlFoto().endsWith(".png")) return true;
-        if (producto.getdUrlFoto().endsWith(".svg")) return true;
-        if (producto.getdUrlFoto().endsWith(".bmp")) return true;
+        if (producto.getUrlFoto().endsWith(".jpg")) return true;
+        if (producto.getUrlFoto().endsWith(".jpeg")) return true;
+        if (producto.getUrlFoto().endsWith(".gif")) return true;
+        if (producto.getUrlFoto().endsWith(".png")) return true;
+        if (producto.getUrlFoto().endsWith(".svg")) return true;
+        if (producto.getUrlFoto().endsWith(".bmp")) return true;
         return false;
     }
 }

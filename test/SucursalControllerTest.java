@@ -18,21 +18,21 @@ public class SucursalControllerTest extends WithApplication {
     }
 
     @Test
-    public void testCRUD(){ //TODO: número aleatorio
+    public void testCRUD(){
 
         int numeroAleatorio = ThreadLocalRandom.current().nextInt(100, 900);
         int numeroAleatorio2 = ThreadLocalRandom.current().nextInt(100, 900);
 
         SucursalEntity sucursal = new SucursalEntity();
-        sucursal.setcId(numeroAleatorio);
-        sucursal.setaDireccion("dir");
-        sucursal.setdNombre("nombre");
+        sucursal.setid(numeroAleatorio);
+        sucursal.setDireccion("dir");
+        sucursal.setNombre("nombre");
         SucursalController.guardar(sucursal);
 
         SucursalEntity sucursal1 = new SucursalEntity();
-        sucursal1.setcId(numeroAleatorio2);
-        sucursal1.setaDireccion("dir1");
-        sucursal1.setdNombre("nombre1");
+        sucursal1.setid(numeroAleatorio2);
+        sucursal1.setDireccion("dir1");
+        sucursal1.setNombre("nombre1");
 
         try {
             assertEquals("No guardo",sucursal, SucursalController.darSucursal(numeroAleatorio));
@@ -41,8 +41,8 @@ public class SucursalControllerTest extends WithApplication {
         }
 
         SucursalController.editar(sucursal, sucursal1);
-        assertEquals("No edito nombre", sucursal.getdNombre(),sucursal1.getdNombre());
-        assertEquals("No edito direccion", sucursal.getaDireccion(),sucursal1.getaDireccion());
+        assertEquals("No edito nombre", sucursal.getNombre(),sucursal1.getNombre());
+        assertEquals("No edito direccion", sucursal.getDireccion(),sucursal1.getDireccion());
         assertEquals("No borro", SucursalController.eliminar( sucursal), true);
 
     }

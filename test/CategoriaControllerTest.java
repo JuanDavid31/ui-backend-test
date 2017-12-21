@@ -1,11 +1,8 @@
 import Exceptions.EntidadNoExisteException;
-import com.google.common.collect.ImmutableMap;
 import controllers.CategoriaController;
 import models.*;
 import org.junit.*;
 import play.Application;
-import play.db.*;
-import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
 
@@ -27,13 +24,13 @@ public class CategoriaControllerTest extends WithApplication{
         int numeroAleatorio2 = ThreadLocalRandom.current().nextInt(100, 900);
 
         CategoriaEntity categoria = new CategoriaEntity();
-        categoria.setcId(numeroAleatorio);
-        categoria.setdNombre("nombre");
+        categoria.setId(numeroAleatorio);
+        categoria.setNombre("nombre");
         CategoriaController.guardar(categoria);
 
         CategoriaEntity categoria1 = new CategoriaEntity();
-        categoria1.setcId(numeroAleatorio2);
-        categoria1.setdNombre("nombre1");
+        categoria1.setId(numeroAleatorio2);
+        categoria1.setNombre("nombre1");
 
         try {
             assertEquals("No guardo",categoria, CategoriaController.darCategoria(numeroAleatorio));
@@ -43,7 +40,7 @@ public class CategoriaControllerTest extends WithApplication{
         }
 
         CategoriaController.editar(categoria, categoria1);
-        assertEquals("No edito nombre",categoria.getdNombre(),categoria1.getdNombre());
+        assertEquals("No edito nombre",categoria.getNombre(),categoria1.getNombre());
 
         assertEquals("No borro", CategoriaController.eliminar(categoria), true);
 

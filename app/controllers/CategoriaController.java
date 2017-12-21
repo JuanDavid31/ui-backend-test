@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import play.mvc.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,12 +39,13 @@ public class CategoriaController extends Controller {
      * @param categoria a guardar
      * @return true si las validaciones son correctas, false en caso contrario
      */
-    public static boolean guardar(CategoriaEntity categoria){
-        if(categoria.validate() == null){
+    public static String guardar(CategoriaEntity categoria){
+        String mensaje = categoria.validate();
+        if(mensaje == null){
             categoria.save();
-            return true;
+            return null;
         }
-        return false;
+        return mensaje;
     }
 
     /**
@@ -54,7 +54,7 @@ public class CategoriaController extends Controller {
      * @param nueva categoria de la que se tomaran los nuevos datos
      */
     public static void editar(CategoriaEntity antigua, CategoriaEntity nueva){
-        antigua.setdNombre(nueva.getdNombre());
+        antigua.setNombre(nueva.getNombre());
         guardar(antigua);
     }
 
@@ -75,7 +75,7 @@ public class CategoriaController extends Controller {
      */
     public static CategoriaEntity jsonAEntidadCategoria(JsonNode json, CategoriaEntity categoria){
         String nombre = json.findPath("nombre").textValue();
-        categoria.setdNombre(nombre);
+        categoria.setNombre(nombre);
         return categoria;
     }
 }

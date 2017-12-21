@@ -13,3 +13,4 @@ libraryDependencies += javaJdbc
 libraryDependencies += "com.h2database" % "h2" % "1.4.194"
 libraryDependencies += "org.postgresql" % "postgresql" % "9.4.1212"
 libraryDependencies += "com.cloudinary" % "cloudinary-http44" % "1.13.0"
+libraryDependencies += "org.json" % "json" % "20090211"

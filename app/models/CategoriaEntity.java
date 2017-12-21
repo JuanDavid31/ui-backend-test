@@ -1,7 +1,6 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import controllers.CategoriaController;
 import io.ebean.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -19,12 +18,27 @@ import play.data.validation.Constraints.*;
 @Table(name = "categoria")
 public class CategoriaEntity  extends Model implements Validatable<String>{
 
+    /**
+     * Id de la categoria
+     */
     @Id
-    private int cId;
+    private int id;
+
+    /**
+     * Nombre de la categoria
+     */
     @NonEmpty @NotNull @Size(min = 3)
-    private String dNombre;
+    private String nombre;
+
+    /**
+     * Lista de productos que contiene la categoria
+     */
     @JsonManagedReference
     private List<ProductoEntity> productos;
+
+    /**
+     * Atributo utilizado para consultas relacionadas con la entidad
+     */
     public static final Finder<Integer, CategoriaEntity> find = new Finder<>(CategoriaEntity.class);
 
     public CategoriaEntity(){
@@ -32,21 +46,21 @@ public class CategoriaEntity  extends Model implements Validatable<String>{
     }
 
     @Column(name = "c_id")
-    public int getcId() {
-        return cId;
+    public int getId() {
+        return id;
     }
 
-    public void setcId(int cId) {
-        this.cId = cId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Column(name = "d_nombre", unique = true)
-    public String getdNombre() {
-        return dNombre;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setdNombre(String dNombre) {
-        this.dNombre = dNombre;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     @OneToMany(mappedBy = "categoria", orphanRemoval = true)
@@ -57,15 +71,19 @@ public class CategoriaEntity  extends Model implements Validatable<String>{
     @Override
     public String toString() {
         return "CategoriaEntity{" +
-                "cId=" + cId +
-                ", dNombre='" + dNombre + '\'' +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
                 ", productos=" + productos +
                 '}';
     }
 
+    /**
+     * Valida que cada atributo con etiqueta @NotNull este en un estado optimo antes de ser persistido
+     * @return Un mensaje con algun error, null si todo esta bien
+     */
     @Override
     public String validate() {
-        if(dNombre == null || dNombre.trim().equalsIgnoreCase("")){
+        if(nombre == null || nombre.trim().equalsIgnoreCase("")){
             return "Nombre no puede estar vacio";
         }
         return null;

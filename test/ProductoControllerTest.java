@@ -1,32 +1,17 @@
 import Exceptions.EntidadNoExisteException;
-import akka.http.impl.util.JavaMapping;
-import akka.stream.javadsl.FileIO;
-import akka.stream.javadsl.Source;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
 import controllers.CategoriaController;
 import controllers.ProductoController;
 import controllers.SucursalController;
 import models.CategoriaEntity;
 import models.ProductoEntity;
 import models.SucursalEntity;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import play.Application;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.apache.commons.io.FileUtils.getFile;
@@ -46,25 +31,25 @@ public class ProductoControllerTest extends WithApplication{
             int numeroAleatorio = ThreadLocalRandom.current().nextInt(100, 900);
             
             SucursalEntity sucursal = new SucursalEntity();
-            sucursal.setcId(numeroAleatorio);
-            sucursal.setaDireccion("dir");
-            sucursal.setdNombre("nombre");
+            sucursal.setid(numeroAleatorio);
+            sucursal.setDireccion("dir");
+            sucursal.setNombre("nombre");
             SucursalController.guardar(sucursal);
 
             CategoriaEntity categoria = new CategoriaEntity();
-            categoria.setcId(numeroAleatorio);
-            categoria.setdNombre("nombre");
+            categoria.setId(numeroAleatorio);
+            categoria.setNombre("nombre");
             CategoriaController.guardar(categoria);
 
 
             ProductoEntity producto = new ProductoEntity();
-            producto.setcId(numeroAleatorio);
-            producto.setdNombre("nombre");
-            producto.setnPrecio(200);
-            producto.setaIngredientes("ingrediente");
-            producto.setdNombreCategoria("categoria");
-            producto.setdUrlFoto("url.jpg");
-            producto.setfLimite("fecha");
+            producto.setId(numeroAleatorio);
+            producto.setNombre("nombre");
+            producto.setPrecio(200);
+            producto.setIngredientes("ingrediente");
+            producto.setNombreCategoria("categoria");
+            producto.setUrlFoto("url.jpg");
+            producto.setFechaLimite("fecha");
 
             ProductoController.adicionarSucursalAProducto(numeroAleatorio,producto);
             ProductoController.adicionarCategoriaAProducto(numeroAleatorio,producto);
@@ -78,7 +63,7 @@ public class ProductoControllerTest extends WithApplication{
 
             ProductoController.editarProductoConUrl(numeroAleatorio,json);
 
-            assertEquals("No edito la url", "urlTEST.jpg",ProductoController.darProducto(numeroAleatorio).getdUrlFoto());
+            assertEquals("No edito la url", "urlTEST.jpg",ProductoController.darProducto(numeroAleatorio).getUrlFoto());
 
             assertEquals("No elimino", true, ProductoController.eliminar(producto));
 

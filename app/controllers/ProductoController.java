@@ -43,14 +43,16 @@ public class ProductoController extends Controller {
     /**
      * Guarda un producto dado
      * @param producto dado
-     * @return True si todo salio bien al guarda, false en caso contrarior
+     * @return mensaje null si no hay error de validación, un mensaje
+     * con el error en caso contrario
      */
-    public static boolean guardar(ProductoEntity producto){
-        if(producto.validate() == null){
+    public static String guardar(ProductoEntity producto){
+        String mensaje = producto.validate();
+        if(mensaje == null){
             producto.save();
-            return true;
+            return null;
         }
-        return false;
+        return mensaje;
     }
 
     /**
@@ -72,7 +74,7 @@ public class ProductoController extends Controller {
     public static void adicionarCategoriaAProducto(int idCategoria, ProductoEntity producto) throws EntidadNoExisteException {
         CategoriaEntity categoria = CategoriaController.darCategoria(idCategoria);
         producto.setCategoria(categoria);
-        producto.setdNombreCategoria(categoria.getdNombre());
+        producto.setNombreCategoria(categoria.getNombre());
     }
 
     /**
@@ -96,7 +98,7 @@ public class ProductoController extends Controller {
         try {
             producto = ProductoController.darProducto(id);
             String url = json.findPath("url").textValue();
-            producto.setdUrlFoto(url);
+            producto.setUrlFoto(url);
             resultado = productoConUrlValido(producto);
         } catch (EntidadNoExisteException e) {
             e.printStackTrace();
@@ -183,7 +185,7 @@ public class ProductoController extends Controller {
      */
     private static void guardar(Map datos) throws EntidadNoExisteException {
         ProductoEntity producto = ProductoController.darProducto(Integer.parseInt(datos.get("id").toString()));
-        producto.setdUrlFoto(datos.get("url").toString());
+        producto.setUrlFoto(datos.get("url").toString());
         ProductoController.guardar(producto);
     }
 
@@ -211,10 +213,10 @@ public class ProductoController extends Controller {
         String fecha = json.findPath("fecha").textValue();
         int precio = json.findPath("precio").asInt();
         String ingredientes = json.findPath("ingredientes").textValue();
-        producto.setdNombre(nombre);
-        producto.setfLimite(fecha);
-        producto.setnPrecio(precio);
-        producto.setaIngredientes(ingredientes);
+        producto.setNombre(nombre);
+        producto.setFechaLimite(fecha);
+        producto.setPrecio(precio);
+        producto.setIngredientes(ingredientes);
         return producto;
     }
 }

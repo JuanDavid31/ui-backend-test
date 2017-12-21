@@ -1,7 +1,7 @@
 package controllers;
 
 import Exceptions.EntidadNoExisteException;
-import com.cloudinary.api.exceptions.BadRequest;
+import org.json.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import play.libs.Json;
@@ -11,6 +11,7 @@ import views.html.indice;
 
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Clase principal que maneja todas las operaciones de la aplicación
@@ -31,6 +32,9 @@ public class ApiController extends Controller {
      */
     public Result darSucursales(){
         List<SucursalEntity> sucursales = SucursalController.darTodos();
+        response().setHeader(HeaderNames.ACCESS_CONTROL_ALLOW_HEADERS, "X-Total-Count");
+        response().setHeader(HeaderNames.ACCESS_CONTROL_EXPOSE_HEADERS, "X-Total-Count");
+        response().setHeader("X-Total-Count", Integer.toString(sucursales.size()));
         return ok(Json.toJson(sucursales));
     }
 
@@ -102,7 +106,7 @@ public class ApiController extends Controller {
             e.printStackTrace();
             return badRequest("La sucursal no existe");
         }
-        return ok("Producto eliminado");
+        return ok("Sucursal eliminada");
     }
 
     /**
@@ -234,6 +238,50 @@ public class ApiController extends Controller {
             e.printStackTrace();
             return badRequest("El producto no existe");
         }
+    }
+
+    //TODO: añadir documentación
+    public Result agregarProducto(int idS){
+        try {
+            MultipartFormData<File> archivo = request().body().asMultipartFormData();
+            Map<String, String[]> parteJSON = request().body().asMultipartFormData().asFormUrlEncoded();
+            ProductoEntity producto = new ProductoEntity();
+            String mensajeValidación = guardarOrgJSONDeEntidadProducto(parteJSON, producto, idS);
+            if(mensajeValidación == null){
+                ProductoController.subirFoto(archivo, producto.getId());
+            }else{
+                return badRequest(mensajeValidación);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return internalServerError("Algo salio mal con el JSON");
+        } catch (EntidadNoExisteException e) {
+            e.printStackTrace();
+            return badRequest("Alguna entidad no existe");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return internalServerError("Alguna calamidad ocurrio con el archivo, intentelo de nuevo");
+        }
+        return ok("El producto fue agregado");
+    }
+
+    private String guardarOrgJSONDeEntidadProducto(Map<String, String[]> parteJSON, ProductoEntity producto, int idS) throws JSONException, EntidadNoExisteException {
+        String[] strings = parteJSON.get("producto");
+        JSONObject productoJSON = null;
+        productoJSON = new JSONObject(strings[0]);
+        String nombre = productoJSON.getString("nombre");
+        int precio = productoJSON.getInt("precio");
+        String ingredientes = productoJSON.getString("ingredientes");
+        String fecha = productoJSON.getString("fecha");
+        int idCategoria = productoJSON.getInt("iDCategoria");
+        producto.setSucursal(SucursalController.darSucursal(idS));
+        producto.setCategoria(CategoriaController.darCategoria(idCategoria));
+        producto.setNombre(nombre);
+        producto.setPrecio(precio);
+        producto.setFechaLimite(fecha);
+        producto.setNombreCategoria(CategoriaController.darCategoria(idCategoria).getNombre());
+        producto.setIngredientes(ingredientes);
+        return ProductoController.guardar(producto);
     }
 
     /**

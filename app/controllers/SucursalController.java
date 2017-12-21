@@ -2,7 +2,6 @@ package controllers;
 
 import Exceptions.EntidadNoExisteException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.ebean.Ebean;
 import models.*;
 import play.mvc.*;
 
@@ -41,12 +40,13 @@ public class SucursalController extends Controller {
      * @param sucursal a guardar
      * @return true si las validaciones son correctas, false en caso contrarior.
      */
-    public static boolean guardar(SucursalEntity sucursal){
-        if(sucursal.validate() == null){
+    public static String guardar(SucursalEntity sucursal){
+        String mensaje = sucursal.validate();
+        if(mensaje == null){
             sucursal.save();
-            return true;
+            return null;
         }
-        return false;
+        return mensaje;
     }
 
     /**
@@ -55,8 +55,8 @@ public class SucursalController extends Controller {
      * @param nuevo sucursal de la cual se van a tomar los datos
      */
     public static void editar(SucursalEntity antiguo, SucursalEntity nuevo){
-        antiguo.setdNombre(nuevo.getdNombre());
-        antiguo.setaDireccion(nuevo.getaDireccion());
+        antiguo.setNombre(nuevo.getNombre());
+        antiguo.setDireccion(nuevo.getDireccion());
         guardar(antiguo);
     }
 
@@ -79,8 +79,8 @@ public class SucursalController extends Controller {
     public static SucursalEntity jsonAEntidadSucursal(JsonNode json, SucursalEntity sucursal){
         String nombre = json.findPath("nombre").textValue();
         String direccion = json.findPath("direccion").textValue();
-        sucursal.setdNombre(nombre);
-        sucursal.setaDireccion(direccion);
+        sucursal.setNombre(nombre);
+        sucursal.setDireccion(direccion);
         return sucursal;
     }
 }
